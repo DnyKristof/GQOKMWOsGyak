@@ -45,7 +45,7 @@ int main()
         printf("A gyermek szám: %d\n",Cpid); 
         read(fd1[0],&parentmsg,SIZE); //Kiolvassuk a szülő pid-et az első csőből	
         write(fd2[1],Cpid, SIZE); //Beleírjuk a második csőbe a gyermek pid-et
-        printf("A Child process vagyok, és a szülőm ID-ja: %d",parentmsg); 66Kiirattatjuk a gyermekkel a szülő pidet
+        printf("A Child process vagyok, és a szülőm ID-ja: %d",parentmsg); //Kiirattatjuk a gyermekkel a szülő pidet
         //kill(Cpid,SIGTERM);
 
     }

@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#define SIZE 256
+
+int main()
+{
+    int fd1[2];  //Létrehozzuk az első csövet
+    int fd2[2];  //Létrehozzuk a második csövet
+    int parentmsg;  //Ide mentjük a processz ID-t
+    int childmsg;
+    
+    if(pipe(fd1) < 0){  // Megpipeoljuk az fd1 és fd2-t
+        exit(1);
+    }
+    if(pipe(fd2) < 0){
+        exit(1);
+    }
+    
+    pid_t pid = fork();  //létrehozzuk a child process
+    
+    
+    
+    if(pid != 0){
+    //szülő részleg
+        pid_t Ppid = getpid(); //Eltároljuk a szülő Pid-jét
+        printf("A szülő szám: %d\n",Ppid); 
+        write(fd1[1], &Ppid, SIZE); //Beleírjuk az első csőbe a szülő pid-et
+		wait(NULL); //Megvárjuk még a gyermek process megcsinálja a dolgait
+        read(fd2[0],&childmsg,SIZE); //Kiolvassuk a második csőből a gyermek pid-et
+        kill(childmsg,SIGTERM); //Megöljük a gyermeket
+		kill(Ppid,SIGTERM); // Utána Megöljük a szülőt
+
+        
+        
+        
+    }
+    else if (pid ==0){
+    //gyermek részleg
+        pid_t Cpid = getpid(); //Eltároljuk a gyemerk pid-et
+        printf("A gyermek szám: %d\n",Cpid); 
+        read(fd1[0],&parentmsg,SIZE); //Kiolvassuk a szülő pid-et az első csőből	
+        write(fd2[1],Cpid, SIZE); //Beleírjuk a második csőbe a gyermek pid-et
+        printf("A Child process vagyok, és a szülőm ID-ja: %d",parentmsg); //Kiirattatjuk a gyermekkel a szülő pidet
+
+    }
+return 0;
+}
